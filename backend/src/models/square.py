@@ -13,14 +13,19 @@ License: MIT
 from __future__ import annotations
 from typing import Optional
 
+from backend.src.interfaces.occupant import Occupant
+
 class Square:
     def __init__(
         self, 
+        occupant: Optional[Occupant] = None,
         north: Optional[Square] = None, 
         south: Optional[Square] = None, 
         east: Optional[Square] = None, 
         west: Optional[Square] = None
     ):
+        self._occupant: Optional[Occupant] = None
+        self.occupant = occupant
         # Initialize internal storage to avoid AttributeError before setters run
         self._north: Square | None = None
         self._south: Square | None = None
@@ -31,7 +36,19 @@ class Square:
         self.north = north
         self.south = south
         self.east = east
-        self.west = west
+        self.west = west    
+
+    @property
+    def occupant(self) -> Occupant | None:
+        return self._occupant
+
+    @occupant.setter
+    def occupant(self, value: Occupant | None):
+        # The isinstance check works because of @runtime_checkable
+        if value is not None and not isinstance(value, Occupant):
+            raise ValueError("Occupant must follow the Occupant protocol")
+        self._occupant = value
+
 
     # --- North Property ---
     @property
@@ -111,5 +128,8 @@ class Square:
             "north": "Square" if self.north else None,
             "south": "Square" if self.south else None,
             "east": "Square" if self.east else None,
-            "west": "Square" if self.west else None
+            "west": "Square" if self.west else None,
+            "occupant": self.occupant.name if self.occupant else None
         }
+
+
