@@ -1,0 +1,115 @@
+"""
+Payment System Unit Tests
+-------------------------
+Description: Validates the processing logic for various payment implementations
+             using a protocol-based interface.
+
+Author: Joseph Adogeri
+Version: 1.0.0
+Since: 2023-10-27
+File: tests.py
+License: MIT
+"""
+from __future__ import annotations
+from typing import Optional
+
+class Square:
+    def __init__(
+        self, 
+        north: Optional[Square] = None, 
+        south: Optional[Square] = None, 
+        east: Optional[Square] = None, 
+        west: Optional[Square] = None
+    ):
+        # Initialize internal storage to avoid AttributeError before setters run
+        self._north: Square | None = None
+        self._south: Square | None = None
+        self._east: Square | None = None
+        self._west: Square | None = None
+        
+        # Use setters for initial assignment to trigger linking logic
+        self.north = north
+        self.south = south
+        self.east = east
+        self.west = west
+
+    # --- North Property ---
+    @property
+    def north(self) -> Optional[Square]:
+        return self._north
+
+    @north.setter
+    def north(self, value: Optional[Square]):
+        if value is not None and not isinstance(value, Square):
+            raise ValueError("Value must be a Square or None")
+        self._north = value
+        # Auto-link: My north's south is me
+        if value is not None and value.south is not self:
+            value.south = self
+
+    # --- South Property ---
+    @property
+    def south(self) -> Optional[Square]:
+        return self._south
+
+    @south.setter
+    def south(self, value: Optional[Square]):
+        if value is not None and not isinstance(value, Square):
+            raise ValueError("Value must be a Square or None")
+        self._south = value
+        # Auto-link: My south's north is me
+        if value is not None and value.north is not self:
+            value.north = self
+
+    # --- East Property ---
+    @property
+    def east(self) -> Optional[Square]:
+        return self._east
+
+    @east.setter
+    def east(self, value: Optional[Square]):
+        if value is not None and not isinstance(value, Square):
+            raise ValueError("Value must be a Square or None")
+        self._east = value
+        # Auto-link: My east's west is me
+        if value is not None and value.west is not self:
+            value.west = self
+
+    # --- West Property ---
+    @property
+    def west(self) -> Optional[Square]:
+        return self._west
+
+    @west.setter
+    def west(self, value: Optional[Square]):
+        if value is not None and not isinstance(value, Square):
+            raise ValueError("Value must be a Square or None")
+        self._west = value
+        # Auto-link: My west's east is me
+        if value is not None and value.east is not self:
+            value.east = self
+
+    def __eq__(self, other: object) -> bool:
+        # A square is only equal to itself
+        return self is other
+
+    def __hash__(self) -> int:
+        # The hash is based on the unique identity of this specific square
+        return hash(id(self))
+
+    def __repr__(self) -> str:
+        # Simplified to show presence of neighbors without recursion
+        n = "Square" if self.north else "None"
+        s = "Square" if self.south else "None"
+        e = "Square" if self.east else "None"
+        w = "Square" if self.west else "None"
+        return f"Square(N:{n}, S:{s}, E:{e}, W:{w})"
+    
+    def to_dict(self) -> dict:
+        # Non-recursive dict representation
+        return {
+            "north": "Square" if self.north else None,
+            "south": "Square" if self.south else None,
+            "east": "Square" if self.east else None,
+            "west": "Square" if self.west else None
+        }
