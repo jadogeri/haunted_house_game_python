@@ -10,10 +10,13 @@ Since: 2023-10-27
 File: tests.py
 License: MIT
 """
-from __future__ import annotations
-from typing import Optional
+from __future__ import annotations # MUST BE LINE 1
+from typing import Optional, TYPE_CHECKING
 
-from backend.src.interfaces.occupant import Occupant
+if TYPE_CHECKING:
+    from src.interfaces.occupant import Occupant
+from nanoid import generate
+
 
 class Square:
     def __init__(
@@ -24,6 +27,7 @@ class Square:
         east: Optional[Square] = None, 
         west: Optional[Square] = None
     ):
+        self.id = generate()
         self._occupant: Optional[Occupant] = None
         self.occupant = occupant
         # Initialize internal storage to avoid AttributeError before setters run
